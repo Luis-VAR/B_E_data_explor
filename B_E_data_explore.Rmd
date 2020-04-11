@@ -1,0 +1,287 @@
+---
+title: "Data inspection/preparation*(BelkinData)*"
+author: "Luis Varela"
+date: "9.10.2019"
+output: html_document
+---
+
+<div style="margin-bottom:100px;">
+</div>
+
+<h2 style="text-align: center;">Introduction</h2>
+
+<p style="text-align: justify;">The purpose of this analysis is to classify and understand the clients who decide by either Belkin, or Elago. The data Frame is composed of 10000 observations.</p>
+
+<div style="margin-bottom:100px;">
+</div>
+
+<h2 style="text-align: center;">Used Libraries</h2>
+
+```{r results='asis', warning=FALSE, message=FALSE}
+
+library(ggplot2)
+library(knitr)
+library(ggthemes)
+library(magrittr)
+library(dplyr)
+library(funModeling)
+
+``` 
+
+<div style="margin-bottom:100px;">
+</div>
+
+<h2 style="text-align: center;">Stats</h2>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+#summary without zipcode
+
+BelkinComplete <- read.csv("Data/BelkinComplete.csv", header =  TRUE, sep = ",")
+kable(summary(BelkinComplete), caption = "Summary")
+
+#doing way too much to be able to render str() as a table
+
+data.frame(
+  variable = names(BelkinComplete),
+  classe = sapply(BelkinComplete, typeof),
+  first_values = sapply(BelkinComplete, function(x)
+    paste0(head(x), collapse = ", ")),
+  row.names = NULL) %>%
+  kable(caption = "Data Structure")
+
+#correcting data types
+
+BelkinComplete$zipcode <- as.factor(BelkinComplete$zipcode)
+BelkinComplete$elevel <- as.factor(BelkinComplete$elevel)
+
+#checking the data a little deeper
+
+kable(head(BelkinComplete, n = 10), caption = "Head of Data Frame: BelkinComplete")
+kable(tail(BelkinComplete, n = 10), caption = "Tail of the Data Frame: BelkinComplete")
+
+#checking for missing data and unique values
+
+kable(df_status(BelkinComplete))
+
+``` 
+
+<div style="margin-bottom:100px;">
+</div>
+
+<h2 style="text-align: center;">Data Exploration</h2>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(age, salary)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("A)  Age, Salary")
+
+``` 
+ 
+<p style="text-align: justify;">__A)__ On this graph, it´s to be noticed how the distribution of the examples, occurs in an almost even way. Where at the last bracket there is a bigger concentration. It´s then relevant the thought of keeping the group as relevant for any further analysis.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(age, zipcode)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("B) Age, Zip Code")
+
+``` 
+
+<p style="text-align: justify;">__B)__ The age distribution in the different regions which the zip code defines, is also quite evenly distributed. This graph, along with the past graph, could indicate that the income level is relatively equally distributed between the regions and age borders.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(age, car)) + 
+  geom_point(position = "jitter", alpha = 0.2)+
+  theme_tufte()+
+  ggtitle ("C) Age, Car")
+
+``` 
+
+<p style="text-align: justify;">__C)__ On the number of cars in relation with the age, there can´t be a concrete or relevant relation that can be stablished. There is a slight dominance on certain number of cars, along the entire spectrum of the age. Further studying might be needed.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(age, elevel)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("D) Age, Education Level")
+
+``` 
+
+<p style="text-align: justify;">__D)__ Contrary than what we saw before, there seems to be a strong difference between the age and the education level; the majority of the subjects in the sample, have reached an intermedium education level.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(age, credit)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("E) Age, Credit")
+
+``` 
+
+<p style="text-align: justify;">__E)__ Also the amount for the credit is concentrated in a medium scale for every age group.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(car, credit)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("F) Car, Credit")
+
+``` 
+
+<p style="text-align: justify;">__F)__ The credit amount tends to stay quite central, even when it´s shown it concentrates among certain quantity of cars heavier than in others. What might be relevant for further consideration is that the lower numbers for credit, are accumulated on the central region for cars. Around 8-14.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(age, brand)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("G) Age, Brand")
+
+``` 
+
+<p style="text-align: justify;">__G)__ The Previous graph shows how the brand preference for Belkin is stronger within the older population, while this reverses in the younger parts. On the sampling who chose Elago, this seems to be equally distributed, while on the brand who chose Belkin, the majority of the observations are concentrated on the last age bracket.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(zipcode, salary)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("H) Zip Code, Salary")
+
+``` 
+
+<p style="text-align: justify;">__H)__ While the geographical distribution shows that there is a clear majority of population in the third bracket, there seems to be no great differentiator on the distribution of the income per geographical area.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(zipcode, credit)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("I) Zip Code, Credit")
+
+``` 
+
+<p style="text-align: justify;">__I)__ There is a clear tendency on the amount of credit per region to be on the center amounts; As seen also with the age.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(elevel, credit)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("J) Education Level, Credit")
+
+``` 
+
+<p style="text-align: justify;">__J)__ Contrary to what was observed on the distribution of credit with the previous two graphs. Where it was correlated to the geographical area and the age; it has a clear tendency in this case to be concentrated among the groups with a median education level.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete, mapping = aes(car, salary)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("K) Car, Salary")
+
+``` 
+
+<p style="text-align: justify;">__K)__ Given the lack of smoothness on the distribution of the observations, and a counterintuitive grouping of such, it is possible to say that the information for the 'car' feature might not be correct.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete,
+       mapping = aes(x = elevel, y = salary, color = brand)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("L) Education Level, Salary, Brand")
+
+``` 
+
+<p style="text-align: justify;">__L)__ The education level and the salary show to have a clear, although moderate, impact on the choice of brand. The majority of the observations that point to Belkin, can be seen among middle income with a 2nd and 3rd educational level. While those with a 1st and 2nd education level with lower income, and 3rd level with higher income have a clear preference on Elago. The last portion of observations, with the highest education level and income, appear to also have the tendency to pick Elago.</p>
+
+<div style="margin-bottom:20px;">
+</div>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+
+ggplot(data = BelkinComplete,
+       mapping = aes(x = zipcode, y = age, color = brand)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  theme_tufte() +
+  ggtitle ("M) Zip Code, Age, Brand")
+
+``` 
+
+<p style="text-align: justify;">__M)__ The observations are very discriminated by the age, yet almost not affected by the geographical area. The majority of the preference for Belkin is concentrated on the population with the oldest ages.</p>
+
+<div style="margin-bottom:100px;">
+</div>
+
+
+
+<h2 style="text-align: center;">Annotations</h2>
+
+<div style="margin-bottom:20px;">
+</div>
+
+<p style="text-align: justify;">The salary doesn´t change with age (graph A), and most part of the observations can be found on the brackets [51-81). The observations are evenly distributed among the geographical areas (Graph B), the credit amount concentrates on the middle values for every age bracket (Graph E), different than the education level, which strongly concentrates on the middle, 2 and 3, for every age group (Graph D). There was not strong correlation founded on the features age-car (Graph C). There are empty spaces on the lower values of credit when observed with the feature car (Graph F), particularly on the values 2, 9, 11, 13, 14 for the feature car. There is an obvious preference in the first two age brackets for Elago, while on the last the observations accumulate on Belkin (Graph G). A weak relation was found between zipcode and salary (Graph H). Credit amount was grouped in the center values in relation to the geographical area (Graph I). Credit scores are concentrated on the middle education levels, 2 and 4, and there is a lot of growth opportunity on level 4, especially in the lower range (Graph J). A car-salary correlation has proven to not be very reliable (Graph K). People with a medium income and educational level, tend to choose Belkin as their brand preference (Graph L). Zip code doesn´t affect the brand preference, but age does have a relevant impact.</p>
+
+```{r results='asis', fig.align='center', out.extra='angle=90'}
+#checking variables correlation (spoiler alert, brand will be 1)
+
+kable(correlation_table(data = BelkinComplete, target = "brand"))
+
+#defining variable importance
+
+variable_importance <- var_rank_info(data = BelkinComplete, target = "brand")
+kable(variable_importance)
+ggplot(variable_importance, aes(x = reorder(var, gr), y = gr, fill = var)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_bw() +
+  xlab("") +
+  ylab("Variable Importance
+       (based on Information Gain)") + 
+  guides(fill = FALSE)
+
+#proving how correlated salary and credit are
+
+cor(BelkinComplete$salary, BelkinComplete$credit)
+```
