@@ -21,6 +21,7 @@ output: html_document
 
 library(ggplot2)
 library(knitr)
+#library(kableExtra)
 library(ggthemes)
 library(magrittr)
 library(dplyr)
@@ -37,7 +38,8 @@ library(funModeling)
 #summary without zipcode
 
 BelkinComplete <- read.csv("Data/BelkinComplete.csv", header =  TRUE, sep = ",")
-kable(summary(BelkinComplete), caption = "Summary")
+kable(summary(BelkinComplete), caption = "Summary") %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 #doing way too much to be able to render str() as a table
 
@@ -47,7 +49,8 @@ data.frame(
   first_values = sapply(BelkinComplete, function(x)
     paste0(head(x), collapse = ", ")),
   row.names = NULL) %>%
-  kable(caption = "Data Structure")
+  kable(caption = "Data Structure") %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 #correcting data types
 
@@ -56,12 +59,15 @@ BelkinComplete$elevel <- as.factor(BelkinComplete$elevel)
 
 #checking the data a little deeper
 
-kable(head(BelkinComplete, n = 10), caption = "Head of Data Frame: BelkinComplete")
-kable(tail(BelkinComplete, n = 10), caption = "Tail of the Data Frame: BelkinComplete")
+kable(head(BelkinComplete, n = 10), caption = "Head of Data Frame: BelkinComplete") %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+kable(tail(BelkinComplete, n = 10), caption = "Tail of the Data Frame: BelkinComplete") %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 #checking for missing data and unique values
 
-kable(df_status(BelkinComplete))
+kable(df_status(BelkinComplete)) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 ``` 
 
