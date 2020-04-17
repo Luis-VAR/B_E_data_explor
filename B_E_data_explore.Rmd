@@ -21,7 +21,7 @@ output: html_document
 
 library(ggplot2)
 library(knitr)
-#library(kableExtra)
+library(kableExtra)
 library(ggthemes)
 library(magrittr)
 library(dplyr)
@@ -39,7 +39,7 @@ library(funModeling)
 
 BelkinComplete <- read.csv("Data/BelkinComplete.csv", header =  TRUE, sep = ",")
 kable(summary(BelkinComplete), caption = "Summary") %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 #doing way too much to be able to render str() as a table
 
@@ -50,24 +50,25 @@ data.frame(
     paste0(head(x), collapse = ", ")),
   row.names = NULL) %>%
   kable(caption = "Data Structure") %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 #correcting data types
 
 BelkinComplete$zipcode <- as.factor(BelkinComplete$zipcode)
 BelkinComplete$elevel <- as.factor(BelkinComplete$elevel)
+BelkinComplete$car <- as.factor(BelkinComplete$car)
 
 #checking the data a little deeper
 
 kable(head(BelkinComplete, n = 10), caption = "Head of Data Frame: BelkinComplete") %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 kable(tail(BelkinComplete, n = 10), caption = "Tail of the Data Frame: BelkinComplete") %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 #checking for missing data and unique values
 
 kable(df_status(BelkinComplete)) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 ``` 
 
@@ -271,8 +272,9 @@ ggplot(data = BelkinComplete,
 
 ```{r results='asis', fig.align='center', out.extra='angle=90'}
 #checking variables correlation (spoiler alert, brand will be 1)
-
-kable(correlation_table(data = BelkinComplete, target = "brand"))
+correlation_table(data = BelkinComplete, target = "brand") %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 #defining variable importance
 
@@ -284,7 +286,7 @@ ggplot(variable_importance, aes(x = reorder(var, gr), y = gr, fill = var)) +
   theme_bw() +
   xlab("") +
   ylab("Variable Importance
-       (based on Information Gain)") + 
+       (Based on Information Gain)") + 
   guides(fill = FALSE)
 
 #proving how correlated salary and credit are
