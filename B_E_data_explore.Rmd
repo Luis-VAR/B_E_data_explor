@@ -18,15 +18,13 @@ output: html_document
 <h2 style="text-align: center;">Used Libraries</h2>
 
 ```{r results='asis', warning=FALSE, message=FALSE}
-
-library(ggplot2)
-library(knitr)
-library(kableExtra)
-library(ggthemes)
-library(magrittr)
-library(dplyr)
-library(funModeling)
-
+library(ggplot2)      #library for the graphs
+library(kableExtra)   #table styling
+library(ggthemes)     #graph library
+library(magrittr)     #magic %>% 
+library(dplyr)        #data wrangling
+library(funModeling)  #modeling and graphic library
+library(knitr)        #table formating library
 ``` 
 
 <div style="margin-bottom:100px;">
@@ -69,7 +67,6 @@ kable(tail(BelkinComplete, n = 10), caption = "Tail of the Data Frame: BelkinCom
 
 kable(df_status(BelkinComplete)) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
 ``` 
 
 <div style="margin-bottom:100px;">
